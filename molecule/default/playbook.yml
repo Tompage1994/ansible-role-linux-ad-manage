@@ -1,0 +1,6 @@
+---
+- name: Converge
+  hosts: all
+  # Roles assumes default vars from role.
+  roles:
+    - role: ansible-role-linux-ad-manage

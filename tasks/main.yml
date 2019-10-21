@@ -1,0 +1,16 @@
+---
+- name: Install adcli package
+  become: true
+  yum:
+    name:
+      - adcli
+    state: present
+
+- name: Configure Kerberos
+  include: configure_kerberos.yml
+
+- name: "[COMPUTE/ACTION] Load Active Directory {{ active_directory_command }} Operation"
+  include: "{{ active_directory_command }}_active_directory.yml"
+
+- name: Configure sssd
+  include: configure_sssd.yml

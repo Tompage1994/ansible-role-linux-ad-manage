@@ -1,0 +1,47 @@
+{{ ansible_managed | comment }}
+
+[sssd]
+domains = {{ ad_manage_dns_name }}
+default_domain_suffix = {{ ad_manage_dns_name }}
+full_name_format = %1$s
+config_file_version = 2
+services = nss, pam
+
+[nss]
+filter_users = {{ sssd_filterusers }}
+
+[domain/{{ ad_manage_dns_name }}]
+ad_domain = {{ ad_manage_dns_name }}
+krb5_realm = {{ ad_manage_dns_name|upper }}
+
+id_provider = ad
+access_provider = ad
+chpass_provider = ad
+access_provider = ad
+
+auto_private_groups = true
+
+dyndns_update = true
+dyndns_refresh_interval = 43200
+dyndns_update_ptr = true
+dyndns_ttl = 3600
+
+cache_credentials = True
+
+default_shell = {{ sssd_defaultshell | default('/bin/bash') }} 
+fallback_homedir = /home/%u
+
+ad_enabled_domains = {{ ad_manage_dns_name }}
+ad_server = {% for dc in sssd_domain_controllers %}{{dc}}{% if not loop.last %},{% endif %}{% endfor %} 
+ad_enable_dns_sites = false
+
+krb5_store_password_if_offline = True
+
+ldap_id_mapping = true
+ldap_schema=ad
+ldap_idmap_range_min= {{ sssd_idmap_range_min }}
+ldap_idmap_range_max= {{ sssd_idmap_range_max }}
+ldap_idmap_default_domain_sid = {{ sssd_domain_sid }}
+ldap_idmap_default_domain = {{ ad_manage_dns_name }}
+ldap_idmap_autorid_compat = true
+use_fully_qualified_names = True

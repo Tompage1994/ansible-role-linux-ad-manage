@@ -1,0 +1,17 @@
+---
+- name: Check if machine is bound
+  command: "/usr/bin/getent group 'domain users'"
+  register: ad_bound
+  failed_when: ad_bound.rc != 0
+  changed_when: false
+  ignore_errors: true
+
+- name: Join {{ ad_manage_dns_name|upper }}
+  become: true
+  shell: >
+    /usr/sbin/adcli join
+    --domain={{ ad_manage_dns_name }}
+    --login-user={{ ad_manage_domain_join_user }}@{{ ad_manage_dns_name | upper }}
+    --domain-ou={{ ad_manage_domain_ou_path }}
+    --stdin-password <<< {{ ad_manage_domain_join_pass }}
+  when: ad_bound is failed
